@@ -37,17 +37,18 @@
     </script>
 </head>
 <body class="bg-green-50 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl animate-fade-in">
-        <h1 class="text-3xl font-bold mb-6 text-green-600 text-center animate-bounce-in">SaftSafari</h1>
+    <div class="bg-white p-4 sm:p-8 rounded-lg shadow-md w-full max-w-2xl animate-fade-in">
+        <h1 class="text-5xl sm:text-6xl font-bold mb-6 text-green-600 text-center animate-bounce-in">SaftSafari</h1>
+        <p class="text-center text-gray-600 mb-6">Dein Pflanzenbewässerungs-Logger</p>
         
         <div id="plant-list" class="space-y-4 mb-6">
             <!-- Pflanzenliste wird hier eingefügt -->
         </div>
         
         <form id="add-plant-form" class="mb-6 animate-slide-in">
-            <div class="flex space-x-2">
+            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                 <input type="text" name="plant-name" placeholder="Pflanzennamen eingeben" class="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 ease-in-out">
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 ease-in-out transform hover:scale-105">Pflanze hinzufügen</button>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">Pflanze hinzufügen</button>
             </div>
         </form>
     </div>
@@ -78,15 +79,15 @@
 
         function createPlantItem(name, lastWatered, index) {
             const div = document.createElement('div');
-            div.className = 'flex items-center justify-between bg-green-100 p-4 rounded-lg animate-slide-in';
+            div.className = 'flex flex-col sm:flex-row items-start sm:items-center justify-between bg-green-100 p-4 rounded-lg animate-slide-in space-y-2 sm:space-y-0';
             div.innerHTML = `
                 <span class="font-semibold text-green-800 flex-grow">${name}</span>
-                <div class="flex items-center space-x-2">
-                    <button onclick="waterPlant(${index})" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out transform hover:scale-105">
-                        ${lastWatered ? `Zuletzt gegossen: ${lastWatered}` : 'Gießen'}
+                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                    <button onclick="waterPlant(${index})" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">
+                        ${lastWatered ? `Zuletzt: ${lastWatered}` : 'Gießen'}
                     </button>
-                    <button onclick="deletePlant(${index})" class="text-red-500 hover:text-red-700 focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-105">
-                        <i class="fas fa-times"></i>
+                    <button onclick="deletePlant(${index})" class="text-red-500 hover:text-red-700 focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto text-center">
+                        <i class="fas fa-times"></i> Löschen
                     </button>
                 </div>
             `;
