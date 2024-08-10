@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/htmx.org@2.0.1"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script>
         tailwind.config = {
             theme: {
@@ -36,21 +37,23 @@
         }
     </script>
 </head>
-<body class="bg-green-50 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-4 sm:p-8 rounded-lg shadow-md w-full max-w-2xl animate-fade-in">
-        <h1 class="text-5xl sm:text-6xl font-bold mb-6 text-green-600 text-center animate-bounce-in">SaftSafari</h1>
-        <p class="text-center text-gray-600 mb-6">Dein Pflanzenbewässerungs-Logger</p>
-        
-        <div id="plant-list" class="space-y-4 mb-6">
-            <!-- Pflanzenliste wird hier eingefügt -->
-        </div>
-        
-        <form id="add-plant-form" class="mb-6 animate-slide-in">
-            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                <input type="text" name="plant-name" placeholder="Pflanzennamen eingeben" class="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 ease-in-out">
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto">Pflanze hinzufügen</button>
+<body class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+    <div class="card w-full max-w-2xl bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="card-title text-6xl sm:text-5xl font-bold mb-2 text-primary justify-center">SaftSafari</h1>
+            <p class="text-center text-base-content opacity-70 mb-6">Dein Pflanzenbewässerungs-Logger</p>
+            
+            <div id="plant-list" class="space-y-4 mb-6">
+                <!-- Pflanzenliste wird hier eingefügt -->
             </div>
-        </form>
+            
+            <form id="add-plant-form" class="form-control w-full max-w-full">
+                <div class="input-group w-full">
+                    <input type="text" name="plant-name" placeholder="Pflanzennamen eingeben" class="input input-bordered flex-grow w-full mb-4" />
+                    <button type="submit" class="btn btn-primary w-full max-w-full">Pflanze hinzufügen</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -79,16 +82,16 @@
 
         function createPlantItem(name, lastWatered, index) {
             const div = document.createElement('div');
-            div.className = 'flex flex-col sm:flex-row items-start sm:items-center justify-between bg-green-100 p-4 rounded-lg animate-slide-in space-y-2 sm:space-y-0';
+            div.className = 'flex flex-col sm:flex-row items-center justify-between bg-base-200 p-4 rounded-lg';
             div.innerHTML = `
-                <span class="font-semibold text-green-800 flex-grow">${name}</span>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-                    <button onclick="waterPlant(${index})" class="bg-transparent p-2 rounded-lg focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-105 w-auto flex items-center justify-center">
-                        <i class="fas fa-tint text-2xl ${lastWatered ? 'text-blue-500' : 'text-gray-400'}"></i>
-                        ${lastWatered ? `<span class="ml-2 text-sm text-gray-600">Zuletzt: ${lastWatered}</span>` : ''}
+                <span class="font-semibold text-base-content flex-grow mb-2 sm:mb-0">${name}</span>
+                <div class="flex items-center space-x-2">
+                    <button onclick="waterPlant(${index})" class="btn btn-circle btn-ghost">
+                        <i class="fas fa-tint text-2xl ${lastWatered ? 'text-primary' : 'text-base-content opacity-50'}"></i>
                     </button>
-                    <button onclick="deletePlant(${index})" class="text-red-500 hover:text-red-700 focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-105 w-full sm:w-auto text-center">
-                        <i class="fas fa-times"></i> 
+                    ${lastWatered ? `<span class="text-sm text-base-content opacity-70">Zuletzt: ${lastWatered}</span>` : ''}
+                    <button onclick="deletePlant(${index})" class="btn btn-circle btn-ghost text-error">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             `;
@@ -106,6 +109,7 @@
             savePlantsToLocalStorage();
             renderPlants();
         }
+
         function addPlant(name) {
             plants.push({ name: name, lastWatered: null });
             savePlantsToLocalStorage();
