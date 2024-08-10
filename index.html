@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="forest" > <!-- data-theme="garden" -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,6 +36,27 @@
             }
         }
     </script>
+    <style>
+                @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes waterDrop {
+            0% { transform: translateY(-10px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(10px); opacity: 0; }
+        }
+        .plant-item {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .water-drop {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            animation: waterDrop 1s ease-out;
+        }
+    
+    </style>
 </head>
 <body class="min-h-screen bg-base-200 flex items-center justify-center p-4">
     <div class="card w-full max-w-2xl bg-base-100 shadow-xl">
@@ -82,20 +103,56 @@
 
         function createPlantItem(name, lastWatered, index) {
             const div = document.createElement('div');
-            div.className = 'flex flex-col sm:flex-row items-center justify-between bg-base-200 p-4 rounded-lg';
+            div.className = 'plant-item flex flex-col bg-base-200 p-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-md';
+            
+            const progressValue = lastWatered ? calculateProgress(lastWatered) : 0;
+            const badgeInfo = getBadgeInfo(progressValue);
+            
             div.innerHTML = `
-                <span class="font-semibold text-base-content flex-grow mb-2 sm:mb-0">${name}</span>
-                <div class="flex items-center space-x-2">
-                    <button onclick="waterPlant(${index})" class="btn btn-circle btn-ghost">
-                        <i class="fas fa-tint text-2xl ${lastWatered ? 'text-primary' : 'text-base-content opacity-50'}"></i>
-                    </button>
-                    ${lastWatered ? `<span class="text-sm text-base-content opacity-70">Zuletzt: ${lastWatered}</span>` : ''}
-                    <button onclick="deletePlant(${index})" class="btn btn-circle btn-ghost text-error">
-                        <i class="fas fa-times"></i>
-                    </button>
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-semibold text-base-content">${name}</span>
+                        <!-- <div class="badge ${badgeInfo.class} transition-all duration-300">${badgeInfo.text}</div> -->
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="waterPlant(${index})" class="btn btn-circle btn-ghost relative overflow-hidden">
+                            <i class="fas fa-tint text-2xl ${lastWatered ? 'text-primary' : 'text-base-content opacity-50'} transition-all duration-300"></i>
+                        </button>
+                        <button onclick="deletePlant(${index})" class="btn btn-circle btn-ghost text-error transition-all duration-300 hover:bg-error hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
+                <div class="w-full flex items-center space-x-2">
+                    <progress class="progress progress-primary w-full transition-all duration-300" value="${progressValue}" max="100"></progress>
+                    <span class="text-sm text-base-content opacity-70">${progressValue}%</span>
+                </div>
+                ${lastWatered ? `<span class="text-sm text-base-content opacity-70 mt-1">Zuletzt gegossen: ${lastWatered}</span>` : ''}
             `;
             return div;
+        }
+
+        function getBadgeInfo(progressValue) {
+            if (progressValue === 0) {
+                return { class: 'badge-secondary', text: 'Neu' };
+            } else if (progressValue < 30) {
+                return { class: 'badge-success', text: 'Gut versorgt' };
+            } else if (progressValue < 70) {
+                return { class: 'badge-warning', text: 'Bald gießen' };
+            } else {
+                return { class: 'badge-error', text: 'Durstig!' };
+            }
+        }
+
+
+
+        function calculateProgress(lastWatered) {
+            const now = new Date();
+            const lastWateredDate = new Date(lastWatered.split('.').reverse().join('-'));
+            const differenceInDays = (now - lastWateredDate) / (1000 * 3600 * 24);
+            // Assuming plants need water every 7 days
+            const progress = Math.min(Math.round((differenceInDays / 3) * 100), 100);
+            return progress;
         }
 
         function waterPlant(index) {
@@ -108,6 +165,13 @@
             plants[index].lastWatered = germanDate;
             savePlantsToLocalStorage();
             renderPlants();
+
+            // Add water drop animation
+            const button = document.querySelectorAll('#plant-list button')[index * 2]; // *2 because we have 2 buttons per plant
+            const waterDrop = document.createElement('i');
+            waterDrop.className = 'fas fa-tint water-drop text-primary';
+            button.appendChild(waterDrop);
+            setTimeout(() => waterDrop.remove(), 1000);
         }
 
         function addPlant(name) {
@@ -122,6 +186,13 @@
             renderPlants();
         }
 
+        function updateProgressBars() {
+            renderPlants();
+        }
+
+        // Update progress bars every hour 3600000
+        setInterval(updateProgressBars, 3600000);
+
         document.addEventListener('DOMContentLoaded', (event) => {
             const form = document.getElementById('add-plant-form');
             form.addEventListener('submit', function(e) {
@@ -130,11 +201,17 @@
                 if (plantName) {
                     addPlant(plantName);
                     e.target.reset();
+
+                    form.classList.add('animate-shake');
+                    setTimeout(() => form.classList.remove('animate-shake'), 500);
                 }
             });
 
             loadPlantsFromLocalStorage();
+            updateProgressBars();
         });
+
+
     </script>
 </body>
 </html>
